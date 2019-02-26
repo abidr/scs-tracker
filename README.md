@@ -48,7 +48,8 @@ Yes of course.
 
 ## Screenshots
 
-![alt text](https://i.ibb.co/MSnsYjw/image.png "Tracker Screenshot")
+![alt text](https://i.ibb.co/dJjGwHw/image.png "Tracker Interface")
+![alt text](https://i.ibb.co/GH6J9nc/image.png "Tracker Screenshot")
 
 ## Changelog
 
