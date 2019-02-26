@@ -27,7 +27,7 @@
 
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
-	die;
+    die;
 }
 
 /**
@@ -59,11 +59,98 @@ Generate the Tracker php file to show the tracking to the user.
  */
 
 $scs_tracker_FileName = 'tracker.php';
-$scs_tracker_FileContent = '<?php $scs_tracker_get_cn = $_GET["cn"];
-$scs_tracker_url = "http://103.3.227.172:4040/Default.aspx?Page=SearchByCNNumber&CN_Number=";
-$scs_tracker_main_content = $scs_tracker_url . $scs_tracker_get_cn;
-$scs_tracker_load_info = file_get_contents($scs_tracker_main_content);
-echo $scs_tracker_load_info;';
+$scs_tracker_FileContent = '<!DOCTYPE HTML>
+<html lang="en-US">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Package Tracker</title>
+        <style type="text/css">
+            @import url("https://fonts.googleapis.com/css?family=Lato:300,400,700,900");
+            body {
+                background:#2c3e50;
+                font-family: "Lato", sans-serif;
+            }
+
+            .wrapper {
+                width:85%;
+                margin:60px auto;
+                padding:30px;
+                background:#fff;
+            }
+
+            .logo {
+                max-width: 100%;
+                width: 200px;
+                padding: 30px 0;
+                margin:0 auto;
+                text-align:center;
+            }
+
+            .scs-tracker {
+                padding: 20px 0;
+            }
+
+            .cnnumber {
+                border: 1px solid #333;
+                padding:10px;
+            }
+
+            .scs-tracker p {
+                border-bottom: 1px solid #ddd;
+                padding-bottom:10px;
+            }
+            .scs-tracker p i {
+                color: #666;
+            }
+            .scs-tracker p:last-child {
+                border-bottom:0px;
+            }
+
+            .copyright {
+                color:#fff;
+                text-align:center;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="wrapper">
+            <center>
+                <h1>Package Tracking Service</h1>
+                <hr />
+            </center>
+            <div class="scs-tracker">
+                <h3 class="cnnumber">CN Number: <span></span>, <i>Sundarban Courier Service</i></h3>
+                <p class="bookingDate">Date of Booking: <span></span></p>
+                <p class="bookingBranch">Booking From: <span></span></p>
+                <p class="bookingDestination">Destination: <span></span></p>
+                <p class="cnstatus">Status: <span></span>, <i class="statusDate"></i></p>
+            </div>
+        </div>
+        <script src="wp-includes/js/jquery/jquery.js"></script>
+        <script>
+            var url_string = window.location.href; //window.location.href
+            var url = new URL(url_string);
+            var cn_get = url.searchParams.get("cn");
+            var cn = cn_get;
+            jQuery.get("http://103.3.227.172:4040/Default.aspx?Page=SearchByCNNumber&CN_Number=" + cn, function(response) {
+                var challenges = jQuery(response).find("#midContent table:last-child").html()
+                var bookingDate = jQuery(challenges).find("#ctl00_lblBookingDate").html()
+                var bookingBranch = jQuery(challenges).find("#ctl00_lblBookingBranch").html()
+                var bookingDestination = jQuery(challenges).find("#ctl00_lblDestination").html()
+                var statusDate = jQuery(challenges).find("#ctl00_gvOrders tbody tr:nth-child(2) td:nth-child(3)").html()
+                var cnstatus = jQuery(challenges).find("#ctl00_gvOrders tbody tr:nth-child(2) td:nth-child(5)").html()
+                
+                document.querySelector(".cnnumber span").innerHTML = cn
+                document.querySelector(".bookingDate span").innerHTML = bookingDate
+                document.querySelector(".bookingBranch span").innerHTML = bookingBranch
+                document.querySelector(".bookingDestination span").innerHTML = bookingDestination
+                document.querySelector(".statusDate").innerHTML = statusDate
+                document.querySelector(".cnstatus span").innerHTML = cnstatus
+            });      
+        </script>
+    </body>
+</html>';
 
 file_put_contents($scs_tracker_FileName, $scs_tracker_FileContent);
 
@@ -81,127 +168,89 @@ $scs_tracker_order_id = $scs_tracker_order->get_id();
 $scs_tracker_cn_number = get_post_meta($scs_tracker_order_id, 'scs_tracker_service_cn_number', true); ?>
 <br>
     <h2><?php echo __('Tracking', 'scs-tracker'); ?></h2>
-    
     <table class="woocommerce-table shop_table gift_info">
         <tbody>
-            <?php if($scs_tracker_cn_number): ?>
             <tr>
                 <th>
-					<?php echo __('CN Number:', 'scs-tracker'); ?>
-				</th>
-                <td>
-					<?php if($scs_tracker_cn_number): ?>
-					<p><?php echo $scs_tracker_cn_number; ?></p>
-					<?php else: ?>
-					<p>
-						<?php echo __('Your order is not booked yet.', 'scs-tracker'); ?>
-					</p>
-					<?php endif; ?>
-				</td>
-            </tr>
-            <tr>
-                <th>
-                    <?php echo __('Booking Date:', 'scs-tracker'); ?>
+                    <?php echo __('CN Number:', 'scs-tracker'); ?>
                 </th>
                 <td>
-                    <p class="bookingDate"></p>
+                    <?php if($scs_tracker_cn_number): ?>
+                    <p><?php echo $scs_tracker_cn_number; ?></p>
+                    <?php else: ?>
+                    <p>
+                        <?php echo __('Your order is not booked yet.', 'scs-tracker'); ?>
+                    </p>
+                    <?php endif; ?>
                 </td>
             </tr>
             <tr>
                 <th>
-                    <?php echo __('Booking From:', 'scs-tracker'); ?>
+                    <?php echo __('Track:', 'scs-tracker'); ?>
                 </th>
                 <td>
-                    <p class="bookingBranch"></p>
+                    <?php if($scs_tracker_cn_number): 
+                    $scs_tracker_site_url_main = site_url( '' );
+                    $scs_tracker_find = array( 'http://', 'https://' );
+                    $scs_tracker_replace = '';
+                    $scs_tracker_site_url = str_replace( $scs_tracker_find, $scs_tracker_replace, $scs_tracker_site_url_main );
+                    ?>
+                    <a target="_scs_tracker" href="http://<?php echo $scs_tracker_site_url; ?>/tracker.php?cn=<?php echo $scs_tracker_cn_number; ?>" class="woocommerce-button button view">
+                        <?php echo __('Track Now', 'scs-tracker'); ?>
+                    </a>
+                    <?php else: ?>
+                    <p>
+                        <?php echo __('----', 'scs-tracker'); ?>
+                    </p>
+                    <?php endif; ?>
                 </td>
             </tr>
-            <tr>
-                <th>
-                    <?php echo __('Destination:', 'scs-tracker'); ?>
-                </th>
-                <td>
-                    <p class="bookingDestination"></p>
-                </td>
-            </tr>
-            <tr>
-                <th>
-                    <?php echo __('Status:', 'scs-tracker'); ?>
-                </th>
-                <td>
-                    <p class="cnstatus"></p>
-                    <span class="statusDate"></span>
-                </td>
-            </tr>
-            <?php else: ?>
-            <tr>
-                <th>
-                    <?php echo __('Your order is not booked yet', 'scs-tracker'); ?>
-                </th>
-            </tr>
-            <?php endif; ?>
         </tbody>
-        <script>
-            jQuery.get("<?php echo site_url(); ?>/tracker.php?cn=<?php echo $scs_tracker_cn_number; ?>", function(response) {
-                var challenges = jQuery(response).find("#midContent table:last-child").html()
-                var bookingDate = jQuery(challenges).find("#ctl00_lblBookingDate").html()
-                var bookingBranch = jQuery(challenges).find("#ctl00_lblBookingBranch").html()
-                var bookingDestination = jQuery(challenges).find("#ctl00_lblDestination").html()
-                var statusDate = jQuery(challenges).find("#ctl00_gvOrders tbody tr:nth-child(2) td:nth-child(3)").html()
-                var cnstatus = jQuery(challenges).find("#ctl00_gvOrders tbody tr:nth-child(2) td:nth-child(5)").html()
-                
-                // document.querySelector(".cnnumber span").innerHTML = cn
-                document.querySelector(".bookingDate").innerHTML = bookingDate
-                document.querySelector(".bookingBranch").innerHTML = bookingBranch
-                document.querySelector(".bookingDestination").innerHTML = bookingDestination
-                document.querySelector(".statusDate").innerHTML = statusDate
-                document.querySelector(".cnstatus").innerHTML = cnstatus
-            });      
-        </script>
 </table>
-	
+    
 <?php }
 
 /* Add a metabox to add CN Number */
 
 function scs_tracker_service_get_meta( $value ) {
-	global $post;
+    global $post;
 
-	$field = get_post_meta( $post->ID, $value, true );
-	if ( ! empty( $field ) ) {
-		return is_array( $field ) ? stripslashes_deep( $field ) : stripslashes( wp_kses_decode_entities( $field ) );
-	} else {
-		return false;
-	}
+    $field = get_post_meta( $post->ID, $value, true );
+    if ( ! empty( $field ) ) {
+        return is_array( $field ) ? stripslashes_deep( $field ) : stripslashes( wp_kses_decode_entities( $field ) );
+    } else {
+        return false;
+    }
 }
 
 function scs_tracker_service_add_meta_box() {
-	add_meta_box(
-		'scs_tracker_service-scs-tracker-service',
-		__( 'SCS Tracker Service', 'scs_tracker_service' ),
-		'scs_tracker_service_html',
-		'shop_order',
-		'side',
-		'high'
-	);
+    add_meta_box(
+        'scs_tracker_service-scs-tracker-service',
+        __( 'SCS Tracker Service', 'scs_tracker_service' ),
+        'scs_tracker_service_html',
+        'shop_order',
+        'side',
+        'high'
+    );
 }
 add_action( 'add_meta_boxes', 'scs_tracker_service_add_meta_box' );
 
 function scs_tracker_service_html( $post) {
-	wp_nonce_field( '_scs_tracker_service_nonce', 'scs_tracker_service_nonce' ); ?>
+    wp_nonce_field( '_scs_tracker_service_nonce', 'scs_tracker_service_nonce' ); ?>
 
-	<p>
-		<label for="scs_tracker_service_cn_number"><?php _e( 'CN Number', 'scs_tracker_service' ); ?></label><br>
-		<input type="text" name="scs_tracker_service_cn_number" id="scs_tracker_service_cn_number" value="<?php echo scs_tracker_service_get_meta( 'scs_tracker_service_cn_number' ); ?>">
-	</p><?php
+    <p>
+        <label for="scs_tracker_service_cn_number"><?php _e( 'CN Number', 'scs_tracker_service' ); ?></label><br>
+        <input type="text" name="scs_tracker_service_cn_number" id="scs_tracker_service_cn_number" value="<?php echo scs_tracker_service_get_meta( 'scs_tracker_service_cn_number' ); ?>">
+    </p><?php
 }
 
 function scs_tracker_service_save( $post_id ) {
-	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
-	if ( ! isset( $_POST['scs_tracker_service_nonce'] ) || ! wp_verify_nonce( $_POST['scs_tracker_service_nonce'], '_scs_tracker_service_nonce' ) ) return;
-	if ( ! current_user_can( 'edit_post', $post_id ) ) return;
+    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
+    if ( ! isset( $_POST['scs_tracker_service_nonce'] ) || ! wp_verify_nonce( $_POST['scs_tracker_service_nonce'], '_scs_tracker_service_nonce' ) ) return;
+    if ( ! current_user_can( 'edit_post', $post_id ) ) return;
 
-	if ( isset( $_POST['scs_tracker_service_cn_number'] ) )
-		update_post_meta( $post_id, 'scs_tracker_service_cn_number', $_POST['scs_tracker_service_cn_number'] );
+    if ( isset( $_POST['scs_tracker_service_cn_number'] ) )
+        update_post_meta( $post_id, 'scs_tracker_service_cn_number', $_POST['scs_tracker_service_cn_number'] );
 }
 add_action( 'save_post', 'scs_tracker_service_save' );
 
