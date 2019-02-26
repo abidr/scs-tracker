@@ -1,4 +1,5 @@
-=== Sundarban Courier Tracker for WooCommerce ===
+Sundarban Courier Tracker for WooCommerce
+======
 Contributors: abidnnt
 Donate link: http://abidr.me
 Tags: tracker, scs, woocommerce
@@ -8,9 +9,9 @@ Stable tag: 4.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-SCS Tracker allows you to add a tracking service for your customer to track their parcel sent with Sundarban Courier Service.
+### Description
 
-== Description ==
+SCS Tracker allows you to add a tracking service for your customer to track their parcel sent with Sundarban Courier Service.
 
 Sundarban Courier Tracker is a free tracking tool for your WooCommerce shop. If you have an online shop in Bangladesh and you send your parcel through Sundarban Courier Service then this plugin will help you extend your customer satisfaction and allows them to track their parcel from wherever they are.
 
@@ -23,7 +24,7 @@ Features:
 *   Destination
 *   Status
 
-== Installation ==
+### Installation
 
 Installing SCS Tracker is very easy!
 
@@ -35,26 +36,21 @@ Automatic Install:
 1. Upload `scs-tracker.zip` through Add New from Plugins.
 2. Activate.
 
-== Frequently Asked Questions ==
+## Frequently Asked Questions
 
-= Why it sometime shows blank information? =
+##### Why it sometime shows blank information?
 
 It shows no information because SCS Server doesn't always work.
 
-= Is it free and can it be used for commercial purpose? =
+##### Is it free and can it be used for commercial purpose?
 
 Yes of course.
 
-== Screenshots ==
+## Screenshots
 
-1. Tracker Interface
+![alt text](https://i.ibb.co/MSnsYjw/image.png "Tracker Screenshot")
 
-== Changelog ==
+## Changelog
 
 = 1.0 =
 * Plugin Launched.
-
-== Upgrade Notice ==
-
-= 1.0 =
-This is the launch of the plugin.
