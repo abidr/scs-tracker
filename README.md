@@ -1,13 +1,13 @@
 Sundarban Courier Tracker for WooCommerce
 ======
-Contributors: abidnnt
-Donate link: http://abidr.me
-Tags: tracker, scs, woocommerce
-Requires at least: 3.0.1
-Tested up to: 5.1
-Stable tag: 4.3
-License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Contributors: abidnnt <br>
+Donate link: http://abidr.me <br>
+Tags: tracker, scs, woocommerce <br>
+Requires at least: 3.0.1 <br>
+Tested up to: 5.1 <br>
+Stable tag: 4.3 <br>
+License: GPLv2 or later <br>
+License URI: http://www.gnu.org/licenses/gpl-2.0.html <br>
 
 ### Description
 
