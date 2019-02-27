@@ -59,98 +59,34 @@ Generate the Tracker php file to show the tracking to the user.
  */
 
 $scs_tracker_FileName = 'tracker.php';
-$scs_tracker_FileContent = '<!DOCTYPE HTML>
-<html lang="en-US">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Package Tracker</title>
-        <style type="text/css">
-            @import url("https://fonts.googleapis.com/css?family=Lato:300,400,700,900");
-            body {
-                background:#2c3e50;
-                font-family: "Lato", sans-serif;
-            }
+$scs_tracker_FileContent = '<?php 
+$scs_tracker_get_cn = $_GET["cn"];
+$scs_tracker_args = "&b=4&f=norefer";
+$scs_tracker_url = "http://proxurf.com/browse.php?u=http%3A%2F%2F103.3.227.172%3A4040%2FDefault.aspx%3FPage%3DSearchByCNNumber%26CN_Number%3D";
+$scs_tracker_cn_plus_url = $scs_tracker_url . $scs_tracker_get_cn;
+$scs_tracker_main_content = $scs_tracker_cn_plus_url . $scs_tracker_args;
 
-            .wrapper {
-                width:85%;
-                margin:60px auto;
-                padding:30px;
-                background:#fff;
-            }
+/* gets the data from a URL */
+function get_data($url) {
+    $ch = curl_init();
+    $timeout = 5;
+    $userAgent = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)";
+    curl_setopt($ch, CURLOPT_USERAGENT, $userAgent);
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+    curl_setopt($ch, CURLOPT_FAILONERROR, true);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_AUTOREFERER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    $data = curl_exec($ch);
+    curl_close($ch);
+    return $data;
+}
 
-            .logo {
-                max-width: 100%;
-                width: 200px;
-                padding: 30px 0;
-                margin:0 auto;
-                text-align:center;
-            }
+$returned_content = get_data($scs_tracker_main_content);
 
-            .scs-tracker {
-                padding: 20px 0;
-            }
-
-            .cnnumber {
-                border: 1px solid #333;
-                padding:10px;
-            }
-
-            .scs-tracker p {
-                border-bottom: 1px solid #ddd;
-                padding-bottom:10px;
-            }
-            .scs-tracker p i {
-                color: #666;
-            }
-            .scs-tracker p:last-child {
-                border-bottom:0px;
-            }
-
-            .copyright {
-                color:#fff;
-                text-align:center;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="wrapper">
-            <center>
-                <h1>Package Tracking Service</h1>
-                <hr />
-            </center>
-            <div class="scs-tracker">
-                <h3 class="cnnumber">CN Number: <span></span>, <i>Sundarban Courier Service</i></h3>
-                <p class="bookingDate">Date of Booking: <span></span></p>
-                <p class="bookingBranch">Booking From: <span></span></p>
-                <p class="bookingDestination">Destination: <span></span></p>
-                <p class="cnstatus">Status: <span></span>, <i class="statusDate"></i></p>
-            </div>
-        </div>
-        <script src="wp-includes/js/jquery/jquery.js"></script>
-        <script>
-            var url_string = window.location.href; //window.location.href
-            var url = new URL(url_string);
-            var cn_get = url.searchParams.get("cn");
-            var cn = cn_get;
-            jQuery.get("http://103.3.227.172:4040/Default.aspx?Page=SearchByCNNumber&CN_Number=" + cn, function(response) {
-                var challenges = jQuery(response).find("#midContent table:last-child").html()
-                var bookingDate = jQuery(challenges).find("#ctl00_lblBookingDate").html()
-                var bookingBranch = jQuery(challenges).find("#ctl00_lblBookingBranch").html()
-                var bookingDestination = jQuery(challenges).find("#ctl00_lblDestination").html()
-                var statusDate = jQuery(challenges).find("#ctl00_gvOrders tbody tr:nth-child(2) td:nth-child(3)").html()
-                var cnstatus = jQuery(challenges).find("#ctl00_gvOrders tbody tr:nth-child(2) td:nth-child(5)").html()
-                
-                document.querySelector(".cnnumber span").innerHTML = cn
-                document.querySelector(".bookingDate span").innerHTML = bookingDate
-                document.querySelector(".bookingBranch span").innerHTML = bookingBranch
-                document.querySelector(".bookingDestination span").innerHTML = bookingDestination
-                document.querySelector(".statusDate").innerHTML = statusDate
-                document.querySelector(".cnstatus span").innerHTML = cnstatus
-            });      
-        </script>
-    </body>
-</html>';
+echo $returned_content;';
 
 file_put_contents($scs_tracker_FileName, $scs_tracker_FileContent);
 
@@ -168,8 +104,10 @@ $scs_tracker_order_id = $scs_tracker_order->get_id();
 $scs_tracker_cn_number = get_post_meta($scs_tracker_order_id, 'scs_tracker_service_cn_number', true); ?>
 <br>
     <h2><?php echo __('Tracking', 'scs-tracker'); ?></h2>
+    
     <table class="woocommerce-table shop_table gift_info">
         <tbody>
+            <?php if($scs_tracker_cn_number): ?>
             <tr>
                 <th>
                     <?php echo __('CN Number:', 'scs-tracker'); ?>
@@ -186,26 +124,62 @@ $scs_tracker_cn_number = get_post_meta($scs_tracker_order_id, 'scs_tracker_servi
             </tr>
             <tr>
                 <th>
-                    <?php echo __('Track:', 'scs-tracker'); ?>
+                    <?php echo __('Booking Date:', 'scs-tracker'); ?>
                 </th>
                 <td>
-                    <?php if($scs_tracker_cn_number): 
-                    $scs_tracker_site_url_main = site_url( '' );
-                    $scs_tracker_find = array( 'http://', 'https://' );
-                    $scs_tracker_replace = '';
-                    $scs_tracker_site_url = str_replace( $scs_tracker_find, $scs_tracker_replace, $scs_tracker_site_url_main );
-                    ?>
-                    <a target="_scs_tracker" href="http://<?php echo $scs_tracker_site_url; ?>/tracker.php?cn=<?php echo $scs_tracker_cn_number; ?>" class="woocommerce-button button view">
-                        <?php echo __('Track Now', 'scs-tracker'); ?>
-                    </a>
-                    <?php else: ?>
-                    <p>
-                        <?php echo __('----', 'scs-tracker'); ?>
-                    </p>
-                    <?php endif; ?>
+                    <p class="bookingDate"></p>
                 </td>
             </tr>
+            <tr>
+                <th>
+                    <?php echo __('Booking From:', 'scs-tracker'); ?>
+                </th>
+                <td>
+                    <p class="bookingBranch"></p>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <?php echo __('Destination:', 'scs-tracker'); ?>
+                </th>
+                <td>
+                    <p class="bookingDestination"></p>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <?php echo __('Status:', 'scs-tracker'); ?>
+                </th>
+                <td>
+                    <p class="cnstatus"></p>
+                    <span class="statusDate"></span>
+                </td>
+            </tr>
+            <?php else: ?>
+            <tr>
+                <th>
+                    <?php echo __('Your order is not booked yet', 'scs-tracker'); ?>
+                </th>
+            </tr>
+            <?php endif; ?>
         </tbody>
+        <script>
+            jQuery.get("<?php echo site_url(); ?>/tracker.php?cn=<?php echo $scs_tracker_cn_number; ?>", function(response) {
+                var challenges = jQuery(response).find("#midContent table:last-child").html()
+                var bookingDate = jQuery(challenges).find("#ctl00_lblBookingDate").html()
+                var bookingBranch = jQuery(challenges).find("#ctl00_lblBookingBranch").html()
+                var bookingDestination = jQuery(challenges).find("#ctl00_lblDestination").html()
+                var statusDate = jQuery(challenges).find("#ctl00_gvOrders tbody tr:nth-child(2) td:nth-child(3)").html()
+                var cnstatus = jQuery(challenges).find("#ctl00_gvOrders tbody tr:nth-child(2) td:nth-child(5)").html()
+                
+                // document.querySelector(".cnnumber span").innerHTML = cn
+                document.querySelector(".bookingDate").innerHTML = bookingDate
+                document.querySelector(".bookingBranch").innerHTML = bookingBranch
+                document.querySelector(".bookingDestination").innerHTML = bookingDestination
+                document.querySelector(".statusDate").innerHTML = statusDate
+                document.querySelector(".cnstatus").innerHTML = cnstatus
+            });      
+        </script>
 </table>
     
 <?php }
