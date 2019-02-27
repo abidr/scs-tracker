@@ -223,8 +223,10 @@ function scs_tracker_service_save( $post_id ) {
     if ( ! isset( $_POST['scs_tracker_service_nonce'] ) || ! wp_verify_nonce( $_POST['scs_tracker_service_nonce'], '_scs_tracker_service_nonce' ) ) return;
     if ( ! current_user_can( 'edit_post', $post_id ) ) return;
 
-    if ( isset( $_POST['scs_tracker_service_cn_number'] ) )
-        update_post_meta( $post_id, 'scs_tracker_service_cn_number', $_POST['scs_tracker_service_cn_number'] );
+    $scs_tracker_cn_number_sanitize = sanitize_text_field($_POST['scs_tracker_service_cn_number']);
+
+    if ( isset( $scs_tracker_cn_number_sanitize ) )
+        update_post_meta( $post_id, 'scs_tracker_service_cn_number', $scs_tracker_cn_number_sanitize );
 }
 add_action( 'save_post', 'scs_tracker_service_save' );
 
