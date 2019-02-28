@@ -71,14 +71,19 @@ $scs_tracker_cn_number = get_post_meta($scs_tracker_order_id, 'scs_tracker_servi
         <?php
 
         if($scs_tracker_cn_number) {
+
             $scs_tracker_args = "&b=4&f=norefer";
             $scs_tracker_url = "https://proxurf.com/browse.php?u=http%3A%2F%2F103.3.227.172%3A4040%2FDefault.aspx%3FPage%3DSearchByCNNumber%26CN_Number%3D";
             $scs_tracker_cn_plus_url = $scs_tracker_url . $scs_tracker_cn_number;
             $scs_tracker_main_content = $scs_tracker_cn_plus_url . $scs_tracker_args;
             $scs_tracker_response = wp_remote_get( $scs_tracker_main_content );
             $scs_tracker_body = wp_remote_retrieve_body( $scs_tracker_response );
-            echo $scs_tracker_body;
+            
+            $scs_tracker_sep_start = explode('id="form1">', $scs_tracker_body); 
+            $scs_tracker_sep_end = explode("</form>", $scs_tracker_sep_start[1]); 
+            echo $scs_tracker_sep_end[0];
         }
+
         ?>
     </div>
     
