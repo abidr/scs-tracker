@@ -53,44 +53,6 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-scs-tracker.php';
  * @since    1.0.0
  */
 
-
-/*
-Generate the Tracker php file to show the tracking to the user.
- */
-
-$scs_tracker_FileName = 'tracker.php';
-$scs_tracker_FileContent = '<?php 
-$scs_tracker_get_cn = $_GET["cn"];
-$scs_tracker_args = "&b=4&f=norefer";
-$scs_tracker_url = "http://proxurf.com/browse.php?u=http%3A%2F%2F103.3.227.172%3A4040%2FDefault.aspx%3FPage%3DSearchByCNNumber%26CN_Number%3D";
-$scs_tracker_cn_plus_url = $scs_tracker_url . $scs_tracker_get_cn;
-$scs_tracker_main_content = $scs_tracker_cn_plus_url . $scs_tracker_args;
-
-/* gets the data from a URL */
-function get_data($url) {
-    $ch = curl_init();
-    $timeout = 5;
-    $userAgent = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)";
-    curl_setopt($ch, CURLOPT_USERAGENT, $userAgent);
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
-    curl_setopt($ch, CURLOPT_FAILONERROR, true);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-    curl_setopt($ch, CURLOPT_AUTOREFERER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-    $data = curl_exec($ch);
-    curl_close($ch);
-    return $data;
-}
-
-$returned_content = get_data($scs_tracker_main_content);
-
-echo $returned_content;';
-
-file_put_contents($scs_tracker_FileName, $scs_tracker_FileContent);
-
-
 /*
 Add a button to track from My Orders Page
  */
@@ -104,6 +66,18 @@ $scs_tracker_order_id = $scs_tracker_order->get_id();
 $scs_tracker_cn_number = get_post_meta($scs_tracker_order_id, 'scs_tracker_service_cn_number', true); ?>
 <br>
     <h2><?php echo __('Tracking', 'scs-tracker'); ?></h2>
+
+    <div class="scs-tracker-get-info" style="display:none;">
+        <?php
+        $scs_tracker_args = "&b=4&f=norefer";
+        $scs_tracker_url = "https://proxurf.com/browse.php?u=http%3A%2F%2F103.3.227.172%3A4040%2FDefault.aspx%3FPage%3DSearchByCNNumber%26CN_Number%3D";
+        $scs_tracker_cn_plus_url = $scs_tracker_url . $scs_tracker_cn_number;
+        $scs_tracker_main_content = $scs_tracker_cn_plus_url . $scs_tracker_args;
+        $scs_tracker_response = wp_remote_get( $scs_tracker_main_content );
+        $scs_tracker_body = wp_remote_retrieve_body( $scs_tracker_response );
+        echo $scs_tracker_body;
+        ?>
+    </div>
     
     <table class="woocommerce-table shop_table gift_info">
         <tbody>
@@ -164,8 +138,7 @@ $scs_tracker_cn_number = get_post_meta($scs_tracker_order_id, 'scs_tracker_servi
             <?php endif; ?>
         </tbody>
         <script>
-            jQuery.get("<?php echo site_url(); ?>/tracker.php?cn=<?php echo $scs_tracker_cn_number; ?>", function(response) {
-                var challenges = jQuery(response).find("#midContent table:last-child").html()
+                var challenges = jQuery('.scs-tracker-get-info').find("#midContent table:last-child").html()
                 var bookingDate = jQuery(challenges).find("#ctl00_lblBookingDate").html()
                 var bookingBranch = jQuery(challenges).find("#ctl00_lblBookingBranch").html()
                 var bookingDestination = jQuery(challenges).find("#ctl00_lblDestination").html()
@@ -177,8 +150,7 @@ $scs_tracker_cn_number = get_post_meta($scs_tracker_order_id, 'scs_tracker_servi
                 document.querySelector(".bookingBranch").innerHTML = bookingBranch
                 document.querySelector(".bookingDestination").innerHTML = bookingDestination
                 document.querySelector(".statusDate").innerHTML = statusDate
-                document.querySelector(".cnstatus").innerHTML = cnstatus
-            });      
+                document.querySelector(".cnstatus").innerHTML = cnstatus    
         </script>
 </table>
     

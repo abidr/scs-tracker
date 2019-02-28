@@ -14,7 +14,7 @@ SCS Tracker allows you to add a tracking service for your customer to track thei
 
 Sundarban Courier Tracker is a free tracking tool for your WooCommerce shop. If you have an online shop in Bangladesh and you send your parcel through Sundarban Courier Service then this plugin will help you extend your customer satisfaction and allows them to track their parcel from wherever they are.
 
-NOTE: This plugin connects with SCS Server (http://103.3.227.172:4040) and retrieve information from that server and shows it on your website. Also the plugin generates a tracker.php in your home directory and the tracker.php must serve from http address. It will not work with https secured connection. And this plugin doesn't send/share any information to any website.
+NOTE: This plugin connects with SCS Server (http://103.3.227.172:4040) through proxurf for secured connection and retrieve information from that server and shows it on your website. And this plugin doesn't send/share any information to any website.
 
 Features:
 
